@@ -1,12 +1,30 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
+import axios from "axios";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import Charts from "./components/Charts";
+import Navbar from "./components/Navbar";
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import "./styles.scss";
+
+const App = () => {
+  const [coinData, setCoinData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true"
+      )
+      .then(res => setCoinData(res.data))
+      .catch(err => console.log(err));
+  }, []);
+  return (
+    <div className="App">
+      <Navbar />
+      <Charts coinData={coinData} />
+    </div>
+  );
+};
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
